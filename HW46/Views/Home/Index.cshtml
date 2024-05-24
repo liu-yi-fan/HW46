@@ -1,0 +1,54 @@
+﻿@model IEnumerable<HW46.Models.Category>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+   @*  <ul>
+    @foreach(var p in Model)
+    {
+        <li>@p.CategoryName</li>
+    }</ul> *@
+
+    <h3 id="test"></h3>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4" id="cards">
+        
+    </div>
+
+
+</div>
+
+@section Styles {
+    <style>
+    </style>
+}
+
+@section Scripts {
+    <script src="~/js/travel.js"></script>
+    <script>
+
+        let cLayout = document.querySelector("#cards");
+
+        const infoModel=spots.CommonFormat.Section
+
+        for(let t of infoModel)
+        {
+            let limitBody = t.xbody.length > 60 ? t.xbody.substring(0, 60) + '...' : t.xbody;
+            let spotInfo =
+                `<div class="col">
+                    <div class="card h-100">
+                                <img src="${t.file.img[0].text}" class="card-img-top" alt="${t.file.img[0]}" class="card-img-top" style="height:16em">
+                        <div class="card-body">
+                            <h5 class="card-title">${t.stitle}</h5>
+                                    <p class="card-text">${limitBody}</p>
+                        </div>
+                    </div>
+                </div>`
+            console.log(spotInfo);
+            cLayout.innerHTML += spotInfo;
+        }
+        
+        
+    </script>
+}

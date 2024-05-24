@@ -1,0 +1,72 @@
+﻿
+@{
+    ViewData["Title"] = "Address";
+}
+
+<h1>Address</h1>
+<div id="selectors">
+<select id="selector">
+    <option></option>
+    </select>
+    <select id="area" style="display:none"></select>
+    <select id="road" style="display:none"></select>
+</div>
+@section Styles {
+    <style>
+    </style>
+}
+
+@section Scripts {
+    <script>
+        const seletor = document.querySelector("#selector");
+        const area = document.querySelector("#area");
+        const road = document.querySelector("#road");
+        // const divSeletors = document.querySelector("#selectors");
+
+        (async () => {
+            const response = await fetch('@Url.Content("~/api/cities")')
+            if (!response.ok) {
+                console.log(`error message:${response.status}`)
+                return
+            }
+            const datas = await response.json()
+            const cities = datas.map(city => `<option value="${city}">${city}</option>`)
+            seletor.innerHTML = cities.join("");
+        })()
+        
+
+        seletor.addEventListener("change", async(e) => {
+            area.value = "";
+            console.log(area.value);
+            const tCity = e.target.value;
+            const areaResponse = await fetch('@Url.Content("~/api/area")'+`?seleCity=${tCity}`)
+            if (!areaResponse.ok) {
+                console.log(`error message:${response.status}`)
+                return
+            }
+            const Adatas = await areaResponse.json();
+            console.log(Adatas);
+            // const sArea = document.createElement("select");
+            area.style.display = "inline-block";
+            const Areas = Adatas.map(areas => `<option value="${areas}">${areas}</option>`)
+            area.innerHTML = Areas.join("");
+            road.style.display = "none";
+            // divSeletors.appendChild(sArea);
+        })
+        
+        area.addEventListener("change", async (e) => {
+            road.value = "";
+            const tArea = e.target.value;
+            const roadResponse = await fetch('@Url.Content("~/api/road")' + `?seleArea=${tArea}`)
+            if (!roadResponse.ok) {
+                console.log(`error message:${response.status}`)
+                return
+            }
+            const Rdatas = await roadResponse.json();
+            road.style.display = "inline-block";
+            const roads = Rdatas.map(roads => `<option value="${roads}">${roads}</option>`)
+            road.innerHTML = roads.join("");
+        })
+
+    </script>
+}
