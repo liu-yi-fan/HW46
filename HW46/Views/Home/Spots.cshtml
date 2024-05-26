@@ -38,7 +38,7 @@
             loadSpots();
         }
         const loadSpots = async () => {
-            const url = 'https://localhost:7144/api/Spots';
+            const url = 'https://localhost:7045/api/Spots';
 
             const response = await fetch(url, {
                 method: 'POST',
@@ -56,20 +56,20 @@
             const spots = data.spotsResult.map(spot => {
                 const { spotId, spotTitle, spotDescription, address, spotImage } = spot;
                 return (`
-                                               <div class="col">
-                                <div class="card">
-                                            <img src="${spotImage}" class="card-img-top" alt="${spotTitle}">
-                                    <div class="card-body">
-                                                        <h5 class="card-title">${spotId} ${spotTitle}</h5>
-                                                                <p class="card-text">${spotDescription.length <= 100 ? spotDescription : spotDescription.substring(0, 100)}</p>
+                                                       <div class="col">
+                                        <div class="card">
+                                                    <img src="${spotImage}" class="card-img-top" alt="${spotTitle}">
+                                            <div class="card-body">
+                                                                <h5 class="card-title">${spotId} ${spotTitle}</h5>
+                                                                        <p class="card-text">${spotDescription.length <= 100 ? spotDescription : spotDescription.substring(0, 100)}</p>
+                                            </div>
+                                            <div class="card-footer">
+                                                                <small class="text-body-secondary">${address}</small>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="card-footer">
-                                                        <small class="text-body-secondary">${address}</small>
-                                    </div>
-                                </div>
-                            </div>
 
-                                       `)
+                                               `)
             })
             divSpots.innerHTML = spots.join("");
 
@@ -79,5 +79,17 @@
                 liPages += `<li class="page-item" onclick="pagingHandler(${i})"><a class="page-link">${i}</a></li>`
             }
             ulPaging.innerHTML = liPages;
+
+        }
+
+        loadSpots();
+
+        inpSearch.addEventListener('keydown', event => {
+            if (event.keyCode === 13) {
+                searchData.keyword = event.target.value;
+                loadSpots();
+            }
+        })
+
     </script>
 }
