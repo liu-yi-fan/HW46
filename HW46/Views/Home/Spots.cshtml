@@ -28,6 +28,7 @@
         const ulPaging = document.querySelector('#ul1');
         const inpSearch = document.querySelector('#inputSearch');
         const btnBarDiv = document.querySelector('#btnBarDiv');
+        let GBtnCategoriesBars;
 
         const searchData = {
             "categoryId": 0,
@@ -42,6 +43,51 @@
             loadSpots();
         }
 
+        const selectedCategory = async (id) => {
+            const url = 'https://localhost:7045/api/Spots';
+            console.log(id);
+
+            const response = await fetch(url, {
+                method:'POST',
+                body: JSON.stringify({ "categoryId": id }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const IDdata = await response.json();
+            console.log(IDdata);
+
+            const spots = IDdata.spotsResult.map(spot => {
+                const { spotId, spotTitle, spotDescription, address, spotImage } = spot;
+                return (`
+                                                               <div class="col">
+                                                <div class="card">
+                                                            <img src="${spotImage}" class="card-img-top" alt="${spotTitle}">
+                                                    <div class="card-body">
+                                                                        <h5 class="card-title">${spotId} ${spotTitle}</h5>
+                                                                                <p class="card-text">${spotDescription.length <= 100 ? spotDescription : spotDescription.substring(0, 100)}</p>
+                                                    </div>
+                                                    <div class="card-footer">
+                                                                        <small class="text-body-secondary">${address}</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                                       `)
+            })
+            divSpots.innerHTML = spots.join("");
+
+            //顯示分頁按鈕
+            let liPages = "";
+            for (let i = 1, max = IDdata.totalPages; i <= max; i++) {
+                liPages += `<li class="page-item" onclick="pagingHandler(${i})"><a class="page-link">${i}</a></li>`
+            }
+            ulPaging.innerHTML = liPages;
+
+            }
+
+           
+
         let btnBar = "";
         (async () => {
             const response = await fetch('https://localhost:7045/api/Categories');
@@ -50,15 +96,21 @@
 
             for (let i of datas) {
                 //console.log(i.categoryName);
-                    btnBar += `<button class="btn btn-outline-secondary" type="button" name="GBtnCategoriesBar" id="categoryBtn${i.categoryId}">${i.categoryName}</button>`
+                    btnBar += `<button class="btn btn-outline-secondary" type="button" name="GBtnCategoriesBar" id="${i.categoryId}">${i.categoryName}</button>`
             }
             btnBarDiv.innerHTML = btnBar;
+            GBtnCategoriesBars = document.getElementsByName('GBtnCategoriesBar');
+
+            GBtnCategoriesBars.forEach(button => {
+                button.addEventListener('click', e => {
+                    console.log(e.target.id);
+                    selectedCategory(e.target.id);
+                });
+            });
+
         })();
 
-        const GBtnCategoriesBar = document.getElementsByName('GBtnCategoriesBar');
-        console.log(GBtnCategoriesBar);
-
-        // GBtnCategoriesBar.forEach((element) => console.log("btn: "+element));
+        
 
         const loadSpots = async () => {
             const url = 'https://localhost:7045/api/Spots';
@@ -106,12 +158,6 @@
         }
 
         loadSpots();
-
-
-
-        // GBtnCategoriesBar.addEventListener('click', e => {
-        //     console.log(e.target);
-        // })
 
 
         inpSearch.addEventListener('keydown', event => {
